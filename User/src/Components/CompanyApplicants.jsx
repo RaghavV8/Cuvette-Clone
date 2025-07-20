@@ -198,7 +198,7 @@ const CompanyApplicants = () => {
 
           <main className="flex-1 p-10 ">
             <h1 className="text-2xl font-semibold">
-              Applied Jobs
+             Applicants  
             </h1>
             <div className="mb-5 mt-5" >
               <input type="text"
