@@ -81,7 +81,82 @@ A fully functional **Cuvette** clone built with the **MERN stack** and styled us
 
 ## Setup Instructions
 
-1. Copy `.env.example` to `.env` in `/server/` and `/User/`
-2. Fill in the required credentials like Mongo URI, JWT secret, etc.
-3. Run the backend: `npm run server`
-4. Run the frontend: `npm run dev` inside `/User/`
+Follow these steps to run the project on your local machine.
+
+### 1. Prerequisites
+
+Before you begin, make sure you have installed the following tools:
+
+- [Node.js](https://nodejs.org/) (v18 or later recommended)
+- [npm](https://www.npmjs.com/) (usually comes with Node.js)
+- [MongoDB](https://www.mongodb.com/try/download/community) (local or use [MongoDB Atlas](https://www.mongodb.com/cloud/atlas))
+- [Git](https://git-scm.com/)
+
+---
+
+### 2. Clone the Repository
+
+Open your terminal and run:
+git clone https://github.com/your-username/your-repo-name.git
+cd your-repo-name
+
+
+---
+
+### 3. Set Up Environment Variables
+
+1. Navigate to the `backend` directory.
+2. Create a `.env` file:
+
+    ```
+    cd server/
+    touch .env
+    ```
+
+3. Add these lines to your `.env` file (replace the placeholders with your actual credentials):
+
+    ```
+    MONGO_URI=your_mongodb_connection_string
+    JWT_SECRET=your_jwt_secret_key
+    ```
+
+---
+
+npm install
+npm start
+
+- The backend should now be running (by default on port 5000).
+
+---
+
+### 5. Install and Run the Frontend
+
+1. Open a new terminal window or tab.
+2. Navigate to the `frontend` directory and run:
+
+    ```
+    cd User/
+    npm install
+    npm start
+    ```
+- The frontend should now be running at [http://localhost:5173](http://localhost:5173).
+
+---
+
+### 6. Using the Application
+
+- Open your browser and go to [http://localhost:5173](http://localhost:5173).
+- Register as an employer or employee to explore all the features.
+
+---
+
+### 💡 Troubleshooting & Tips
+
+- If you see a "port already in use" error, either stop the other app using that port or change the port in your `.env`.
+- Never commit your `.env` to a public repository—keep it private!
+- For a free database, consider using [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
+- For issues or help, open an issue on GitHub.
+
+---
+
+
