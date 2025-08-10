@@ -7,7 +7,7 @@ exports.isAuthenticated = async (req,res,next)=>{
     console.log("Cookies received in request:", req.cookies);
 console.log("Token received:", req.cookies?.token);
 
-    const token  = req.cookies?.token; //Get token from HTTP-only cookies
+    const token  = req.cookies?.token|| req.header("Authorization")?.replace("Bearer ", ""); //Get token from HTTP-only cookies
     //Make sure tokens exists
     if(!token){
         return next(new ErrorResponse("Not authorised to access this route",400));

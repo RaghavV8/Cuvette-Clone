@@ -14,6 +14,7 @@ const userRoutes = require('./routes/userRoutes');
 const jobTypeRoute = require('./routes/jobsTypeRoutes')
 const jobRoute = require("./routes/jobsRoutes")
 const applicationRoutes = require("./routes/applicationRoutes");
+app.set("trust proxy", 1);
 
 
 //database connection
@@ -30,17 +31,19 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.get("/api/health", (req, res) => res.status(200).json({ ok: true }));
 
 //For Authentication 
 app.use(cookieParser());
 
 //cors for making requests to backend
 const corsOptions = {
-    origin: "https://cuvette-clone-gilt.vercel.app", // Allows only this frontend url
-    credentials: true, // Allows sending authentication tokens (cookies,JWT)
-
-}
+origin: process.env.CLIENT_ORIGIN || "https://cuvette-clone-gilt.vercel.app",
+credentials: true,
+};
 app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
 
 app.use((req, res, next) => {
     res.set("Cache-Control", "no-store,no-cache,must-revalidate,private");
