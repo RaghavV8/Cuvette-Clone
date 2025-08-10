@@ -36,7 +36,7 @@ app.use(cookieParser());
 
 //cors for making requests to backend
 const corsOptions = {
-    origin: "https://cuvette-cloned-pi.vercel.app", // Allows only this frontend url
+    origin: "https://cuvette-clone-gilt.vercel.app", // Allows only this frontend url
     credentials: true, // Allows sending authentication tokens (cookies,JWT)
 
 }
