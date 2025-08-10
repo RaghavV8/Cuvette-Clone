@@ -16,36 +16,36 @@ const Home = () => {
 
     //To fetch applied jobs to the page when applied by a user
     const fetchAppliedJobs = useCallback(async () => {
-    try {
-        const response = await fetch(`${API_BASE}/api/applied`, {
-            method: "GET",
-            credentials: "include"
-        });
-        const data = await response.json();
-        if (response.ok) {
-            const ids = data.applications.map(app => app.job._id);
-            setAppliedJobIds(ids);
+        try {
+            const response = await fetch(`${API_BASE}/api/applied`, {
+                method: "GET",
+                credentials: "include"
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const ids = data.applications.map(app => app.job._id);
+                setAppliedJobIds(ids);
+            }
+        } catch (error) {
+            console.error("Error fetching applied jobs:", error);
         }
-    } catch (error) {
-        console.error("Error fetching applied jobs:", error);
-    }
-}, []);
+    }, []);
 
-const handleApplySuccess = () => {
-    fetchAppliedJobs();
-};
+    const handleApplySuccess = () => {
+        fetchAppliedJobs();
+    };
 
     //Excluding Jobs with the tag others
     const EXCLUDED_JOB_TYPE_ID = "67cae27aad0ea1d293bac443";
-    
+
     //User state to store logged-in User's details
-    const [ user,setUser] = useState(null);
+    const [user, setUser] = useState(null);
 
 
     const [page, setPage] = useState(1);
     const [cat, setCat] = React.useState(''); //Variable intended for category wise search will work on it later
     const [searchTerm, setSearchTerm] = useState("");
-     const [jobTypes, setJobTypes] = useState([]);
+    const [jobTypes, setJobTypes] = useState([]);
     const [selectedJobType, setSelectedJobType] = useState("");
 
     //To search for jobs in the search bar and for that to get job data from Redux store
@@ -55,107 +55,109 @@ const handleApplySuccess = () => {
     useEffect(() => {
         dispatch(jobLoadAction(page, keyword, cat, location));
         fetchAppliedJobs(); // Fetch applied jobs whenever the main job list is loaded
-    }, [page, keyword, cat, location,dispatch, fetchAppliedJobs]);
+    }, [page, keyword, cat, location, dispatch, fetchAppliedJobs]);
 
-    const filteredJobs = Array.isArray(jobs) 
-    ? jobs.filter((job) => {
-        // Exclude jobs with the EXCLUDED_JOB_TYPE_ID
-        if(job.jobType === EXCLUDED_JOB_TYPE_ID) return false;
+    const filteredJobs = Array.isArray(jobs)
+        ? jobs.filter((job) => {
+            // This is the missing line. It checks if the job's ID is in the appliedJobIds array.
+            if (appliedJobIds.includes(job._id)) return false;
 
-        //This line ensures that whenever a job Type is selected from the select options only those job Types are shown
-        const matchesJobType = selectedJobType ? job.jobType === selectedJobType : true;
+            // The rest of your existing filter logic goes here
+            if (job.jobType === EXCLUDED_JOB_TYPE_ID) return false;
 
-        const matchesSearch = searchTerm
-            ? job.title.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-            job.location.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-            job.description.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
-            job.salary.toLowerCase().includes(searchTerm.toLocaleLowerCase())
-            : true;
-
-
-        return matchesSearch && matchesJobType
-    }) : [];
+            //This line ensures that whenever a job Type is selected from the select options only those job Types are shown
+            const matchesJobType = selectedJobType ? job.jobType === selectedJobType : true;
+            const matchesSearch = searchTerm
+                ? job.title.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+                job.location.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+                job.description.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+                job.salary.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+                : true;
+            return matchesSearch && matchesJobType;
+        }) : [];
 
     //To Fetch JobTypes from the Database
-    useEffect(()=>{
-        const fetchfilter = async () =>{
+    useEffect(() => {
+        const fetchfilter = async () => {
             try {
                 const response = await fetch(`${API_BASE}/api/type/jobs`)
                 const data = await response.json();
-    
+
                 console.log("job Types Array: ", data.jobT);
-    
-                if(Array.isArray(data.jobT)){
+
+                if (Array.isArray(data.jobT)) {
                     setJobTypes(data.jobT);
-                }else{
+                } else {
                     console.log("Unexpected API response format:", data);
                     setJobTypes([]);
                 }
             } catch (error) {
-               console.log("Error fetching job types:", error);
-               setJobTypes([]); 
+                console.log("Error fetching job types:", error);
+                setJobTypes([]);
             }
         };
         fetchfilter();
-    },[]);
+    }, []);
 
     //To prevent user from going back to login page after logging out without authentication
-    useEffect(()=>{
-        const checkAuth= async () =>{
+    useEffect(() => {
+        const checkAuth = async () => {
             try {   //get requests sent to backend for the cookie authentication at the /api/me endpoint of the server
-                const response = await fetch(`${API_BASE}/api/me`,{
-                method: "GET",
-                credentials: "include",
+                const response = await fetch(`${API_BASE}/api/me`, {
+                    method: "GET",
+                    credentials: "include",
                 });
-                if(!response.ok){
-                    navigate("/students/login",{replace: true}); //if its true user is allowed to enter
+                if (!response.ok) {
+                    navigate("/students/login", { replace: true }); //if its true user is allowed to enter
                 }
             } catch (error) {
-                console.log("Error checking authentication",error);        
-                navigate("/students/login",{replace:true});
+                console.log("Error checking authentication", error);
+                navigate("/students/login", { replace: true });
             }
-        } ;
+        };
         checkAuth();
-    },[]);
+    }, []);
 
     // Fetch Logged-in User Details
-    useEffect(()=>{
-        const fetchUserProfile = async()=>{
+    useEffect(() => {
+        const fetchUserProfile = async () => {
             try {
-               {const response = await fetch(`${API_BASE}/api/me`,{
-               method:"GET",
-               credentials: "include", //Ensures cookies/tokens are sent
-               headers:{
-                Authorization: `Bearer ${localStorage.getItem("token")}`,
-                "Content-Type": "application/json",
-               },
-               });
-               const data = await response.json();
-               if(response.ok){
-                setUser(data.user);
-               }else{
-                console.log("Error fetching data",data.error);
-               }
-            }}catch (error) {
-                console.log("Error Fetching user profile",error);
+                {
+                    const response = await fetch(`${API_BASE}/api/me`, {
+                        method: "GET",
+                        credentials: "include", //Ensures cookies/tokens are sent
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            "Content-Type": "application/json",
+                        },
+                    });
+                    const data = await response.json();
+                    if (response.ok) {
+                        setUser(data.user);
+                    } else {
+                        console.log("Error fetching data", data.error);
+                    }
+                }
+            } catch (error) {
+                console.log("Error Fetching user profile", error);
             }
-    };
-    console.log(localStorage.getItem("token"));
+        };
+        console.log(localStorage.getItem("token"));
 
-    fetchUserProfile();
-},[]);
+        fetchUserProfile();
+    }, []);
 
     //Logout Function
-    const handleLogout = async () =>{
+    const handleLogout = async () => {
         try {
-            await fetch(`${API_BASE}/api/logout`, {method:"GET"});
+            await fetch(`${API_BASE}/api/logout`, { method: "GET" });
 
             //Clear local storage to redirect to login page
             localStorage.removeItem("token");
             localStorage.removeItem("role");
-            navigate("/students/login", {replace:true});
+            navigate("/students/login", { replace: true });
         } catch (error) {
-            console.log("Logout error",error);
+            console.log("Logout error", error);
         }
     };
     return (
@@ -176,14 +178,14 @@ const handleApplySuccess = () => {
                                 <div className="flex items-center border border-gray-300 rounded-lg py-1 px-6">
                                     <img src="user.png" className="h-8 w-8 rounded-full" alt="Profile" />
                                     <select className='p-2 ml-4  border border-gray-300 rounded'
-                                        onChange={(e)=>{
-                                            if(e.target.value == "logout"){
+                                        onChange={(e) => {
+                                            if (e.target.value == "logout") {
                                                 handleLogout();
                                             }
                                         }}
                                     >
                                         <option value="">
-                                            {user ? `${user.firstName} ${user.lastName}`:"Loading"}
+                                            {user ? `${user.firstName} ${user.lastName}` : "Loading"}
                                         </option>
                                         <option value="logout">Logout</option>
                                     </select>
@@ -239,7 +241,7 @@ const handleApplySuccess = () => {
                     ) : (
                         filteredJobs.length > 0 ? (
                             filteredJobs.map((job) => (
-                                <JobCard key={job._id} {...job} onApplySuccess={handleApplySuccess}/>
+                                <JobCard key={job._id} {...job} onApplySuccess={handleApplySuccess} />
                             ))
                         ) : (
                             <p className='text-gray-500'>No jobs found</p>
@@ -251,19 +253,19 @@ const handleApplySuccess = () => {
                     <div className="flex flex-col gap-4 mt-2">
                         {/* Job Type Dropdown */}
                         <select name="Job-Type" id="" value={selectedJobType}
-                        className='p-2 border-2 border-black rounded bg-white'
-                        onChange={(e)=> setSelectedJobType(e.target.value)}
-                        required
+                            className='p-2 border-2 border-black rounded bg-white'
+                            onChange={(e) => setSelectedJobType(e.target.value)}
+                            required
                         >
                             <option value="">All Job Types</option>
                             {
                                 jobTypes
-                                .filter(job => job._id !== EXCLUDED_JOB_TYPE_ID) //job._id correctly references MongoDB's ObjectID field (this line is to exclude other job Types from this)
-                                .map((job)=>(
-                                    <option value={job._id} key={job._id}>
-                                        {job.jobTypeName}
-                                    </option>
-                                ))}
+                                    .filter(job => job._id !== EXCLUDED_JOB_TYPE_ID) //job._id correctly references MongoDB's ObjectID field (this line is to exclude other job Types from this)
+                                    .map((job) => (
+                                        <option value={job._id} key={job._id}>
+                                            {job.jobTypeName}
+                                        </option>
+                                    ))}
                         </select>
                     </div>
                 </div>
