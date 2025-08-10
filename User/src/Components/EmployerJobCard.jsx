@@ -1,6 +1,7 @@
 import React from 'react';
 import "boxicons";
 import { useNavigate } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const JobCard = ({ _id, title, location, description, salary, createdAt, onDelete, status }) => {
     const navigate = useNavigate();
@@ -10,10 +11,10 @@ const JobCard = ({ _id, title, location, description, salary, createdAt, onDelet
         console.log(`Deleting job with ID: ${_id}`);
 
 
-        console.log(`Sending DELETE request to: http://localhost:9000/api/job/delete/${_id}`);
+        console.log(`Sending DELETE request to: ${API_BASE}/api/job/delete/${_id}`);
 
         try {
-            const response = await fetch(`http://localhost:9000/api/job/delete/${_id}`, {
+            const response = await fetch(`${API_BASE}/api/job/delete/${_id}`, {
                 method: "DELETE",
                 credentials: "include",
             });

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import JobApplicantCards from './JobApplicantCards';
+const API_BASE = import.meta.env.VITE_API_BASE_URL; 
 
 const CompanyApplicants = () => {
   const [applicants, setApplicants] = useState([]);
@@ -16,7 +17,7 @@ const CompanyApplicants = () => {
   //Fetch  usestatapplicants
   const fetchApplicants = async () => {
     try {
-      const response = await fetch("http://localhost:9000/api/company/applicants", {
+      const response = await fetch(`${API_BASE}/api/company/applicants`, {
         method: "GET",
         credentials: "include"
       });
@@ -42,7 +43,7 @@ const CompanyApplicants = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {   //get requests sent to backend for the cookie authentication at the /api/me endpoint of the server
-        const response = await fetch("http://localhost:9000/api/me", {
+        const response = await fetch(`${API_BASE}/api/me`, {
           method: "GET",
           credentials: "include",
         });
@@ -63,7 +64,7 @@ const CompanyApplicants = () => {
     const fetchUserProfile = async () => {
       try {
         {
-          const response = await fetch("http://localhost:9000/api/me", {
+          const response = await fetch(`${API_BASE}/api/me`, {
             method: "GET",
             credentials: "include", //Ensures cookies/tokens are sent
             headers: {
@@ -90,7 +91,7 @@ const CompanyApplicants = () => {
   //Logout Function
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:9000/api/logout", { method: "GET" });
+      await fetch(`${API_BASE}/api/logout`, { method: "GET" });
 
       //Clear local storage to redirect to login page
       localStorage.removeItem("token");

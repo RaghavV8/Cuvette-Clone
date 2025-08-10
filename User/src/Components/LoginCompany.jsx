@@ -3,6 +3,7 @@ import Navbar from './Navbar'
 import Register from './RegisterStudents'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
 const Login = () => {
@@ -18,7 +19,7 @@ const Login = () => {
   const onSubmit = async (data) => {
     console.log("Sending Data:", data);
     try {
-      const response = await fetch("http://localhost:9000/api/signin",{
+      const response = await fetch(`${API_BASE}/api/signin`,{
         method: "POST",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify({...data}),

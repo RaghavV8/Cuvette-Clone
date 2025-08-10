@@ -6,6 +6,7 @@ import { jobLoadAction } from '../redux/actions/jobAction'
 import { useParams } from 'react-router-dom';
 import JobCard from './JobCard';
 import EmpJobCard from './EmployerJobCard';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const CompanyHome = () => {
     // const { jobs, SetUniqueLocation, pages, loading } = useSelector(state => state.loadJobs);
@@ -29,7 +30,7 @@ const CompanyHome = () => {
     //To Load All the Jobs fetched by the API in the form of Cards
     const fetchUserJobs = async () => {
         try {
-            const response = await fetch("http://localhost:9000/api/jobs/myjobs", {
+            const response = await fetch(`${API_BASE}/api/jobs/myjobs`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -69,7 +70,7 @@ const CompanyHome = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {   //get requests sent to backend for the cookie authentication at the /api/me endpoint of the server
-                const response = await fetch("http://localhost:9000/api/me", {
+                const response = await fetch(`${API_BASE}/api/me`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -89,7 +90,7 @@ const CompanyHome = () => {
         const fetchUserProfile = async () => {
             try {
                 {
-                    const response = await fetch("http://localhost:9000/api/me", {
+                    const response = await fetch(`${API_BASE}/api/me`, {
                         method: "GET",
                         credentials: "include", //Ensures cookies/tokens are sent
                         headers: {
@@ -116,8 +117,7 @@ const CompanyHome = () => {
     //Logout Function
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:9000/api/logout", { method: "GET" });
-
+            await fetch(`${API_BASE}/api/logout`, { method: "GET" });
             //Clear local storage to redirect to login page
             localStorage.removeItem("token");
             localStorage.removeItem("role");
@@ -129,7 +129,7 @@ const CompanyHome = () => {
 
 
     const handleDeleteJob = async (jobId) => {
-     // Remove job from UI
+        // Remove job from UI
         fetchUserJobs();
     };
 
@@ -211,11 +211,11 @@ const CompanyHome = () => {
                         ) : (
                             <p className='text-gray-500'> No Jobs Found</p>
                         )
-                        ): (
-                            userJobs.length > 0 ? (
-                                userJobs.map((job)=>(
-                                    <EmpJobCard key={job._id} {...job} onDelete={()=> handleDeleteJob(job._id)}/>
-                                ))
+                    ) : (
+                        userJobs.length > 0 ? (
+                            userJobs.map((job) => (
+                                <EmpJobCard key={job._id} {...job} onDelete={() => handleDeleteJob(job._id)} />
+                            ))
                         ) : (
                             <p className='text-gray-500'>No jobs found</p>
                         )

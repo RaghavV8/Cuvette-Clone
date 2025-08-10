@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { jobLoadAction } from '../redux/actions/jobAction'
 import { useParams } from 'react-router-dom';
 import JobCard from './JobCard';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const Home = () => {
     // const { jobs, SetUniqueLocation, pages, loading } = useSelector(state => state.loadJobs);
@@ -56,7 +57,7 @@ const Home = () => {
     useEffect(()=>{
         const fetchfilter = async () =>{
             try {
-                const response = await fetch('http://localhost:9000/api/type/jobs')
+                const response = await fetch(`${API_BASE}/api/type/jobs`)
                 const data = await response.json();
     
                 console.log("job Types Array: ", data.jobT);
@@ -79,7 +80,7 @@ const Home = () => {
     useEffect(()=>{
         const checkAuth= async () =>{
             try {   //get requests sent to backend for the cookie authentication at the /api/me endpoint of the server
-                const response = await fetch("http://localhost:9000/api/me",{
+                const response = await fetch(`${API_BASE}/api/me`,{
                 method: "GET",
                 credentials: "include",
                 });
@@ -98,7 +99,7 @@ const Home = () => {
     useEffect(()=>{
         const fetchUserProfile = async()=>{
             try {
-               {const response = await fetch("http://localhost:9000/api/me",{
+               {const response = await fetch(`${API_BASE}/api/me`,{
                method:"GET",
                credentials: "include", //Ensures cookies/tokens are sent
                headers:{
@@ -124,7 +125,7 @@ const Home = () => {
     //Logout Function
     const handleLogout = async () =>{
         try {
-            await fetch("http://localhost:9000/api/logout", {method:"GET"});
+            await fetch(`${API_BASE}/api/logout`, {method:"GET"});
 
             //Clear local storage to redirect to login page
             localStorage.removeItem("token");

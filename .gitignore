@@ -1,6 +1,8 @@
 # Node dependencies
 **/node_modules/
-**/.env
+.env
+.env.*
+!.env.example
 yarn-error.log
 npm-debug.log
 yarn.lock

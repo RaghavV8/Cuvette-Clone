@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Navbar from './Navbar';
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
 const Register = () => {
@@ -21,7 +22,7 @@ const Register = () => {
     console.log("Sending Data:", data); //debugging log
 
     try {
-      const response = await fetch("http://localhost:9000/api/signup", {
+      const response = await fetch(`${API_BASE}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, role: 1 })

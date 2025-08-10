@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form";
 import Navbar from './Navbar';
 import { useNavigate, useParams } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-
+// NOTE: Despite the name, this component is used to EDIT existing jobs.
+// It fetches job details from the database using the jobId in the URL
+// and pre-fills the form for editing.
 const CreateJob = () => {
     const { register, handleSubmit, setValue } = useForm();
     const { jobId } = useParams();
@@ -25,7 +28,7 @@ const CreateJob = () => {
 
         const fetchJobDetails = async () => {
             try {
-                const response = await fetch(`http://localhost:9000/api/job/${jobId}`, { method: "GET" });
+                const response = await fetch(`${API_BASE}/api/job/${jobId}`, { method: "GET" });
                 const data = await response.json();
                 if (response.ok) {
                     setValue("title", data.job.title);
@@ -45,7 +48,7 @@ const CreateJob = () => {
     useEffect(() => {
         const fetchJobTypes = async () => {
             try {
-                const response = await fetch('http://localhost:9000/api/type/jobs')
+                const response = await fetch(`${API_BASE}/api/type/jobs`)
                 const data = await response.json();
 
                 console.log("Job Types Array:", data.jobT);
@@ -76,7 +79,7 @@ const CreateJob = () => {
             };
             console.log('Submitting Updated Job', updatedJob);
 
-            const response = await fetch(`http://localhost:9000/api/job/update/${jobId}`, {
+            const response = await fetch(`${API_BASE}/api/job/update/${jobId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -171,5 +174,8 @@ const CreateJob = () => {
     )
 }
 
+// NOTE: Despite the name, this component is used to EDIT existing jobs.
+// It fetches job details from the database using the jobId in the URL
+// and pre-fills the form for editing.
 export default CreateJob
 

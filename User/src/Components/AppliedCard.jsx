@@ -1,9 +1,10 @@
 import React from 'react'
+const API_BASE = import.meta.env.VITE_API_BASE_URL
 // This card is for Student's Applied Section
 const AppliedCard = ({ applicationId, title, location, description, salary, createdAt,status, onRemove }) => {
     const handleRemove = async () => {
         try {
-            const response = await fetch(`http://localhost:9000/api/application/${applicationId}`, {
+            const response = await fetch(`${API_BASE}/api/application/${applicationId}`, {
                 method: "DELETE",
                 credentials: "include",
             });

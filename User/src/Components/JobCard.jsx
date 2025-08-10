@@ -1,4 +1,5 @@
 import React from 'react'
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 const JobCard = ({ _id, title, location, description, salary, createdAt }) => {
     const applyForJob = async () => {
@@ -10,7 +11,7 @@ const JobCard = ({ _id, title, location, description, salary, createdAt }) => {
 
             console.log("Job ID received:", _id);
 
-            const response = await fetch("http://localhost:9000/api/apply", {
+            const response = await fetch(`${API_BASE}/api/apply`, {
                 method: "POST",
                 credentials: "include",
                 headers: {

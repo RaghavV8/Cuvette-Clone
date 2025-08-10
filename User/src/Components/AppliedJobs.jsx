@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import AppliedCard from './AppliedCard';
 import { useDispatch } from 'react-redux';
+const API_BASE = import.meta.env.VITE_API_BASE_URL; 
 
 const StudentsHome = () => {
     const [appliedJobs, setAppliedJobs] = useState([]);
@@ -15,7 +16,7 @@ const StudentsHome = () => {
 
     const fetchAppliedJobs = async () => {
         try {
-            const response = await fetch("http://localhost:9000/api/applied", {
+            const response = await fetch(`${API_BASE}/api/applied`, {
                 method: "GET",
                 credentials: "include"
             });
@@ -42,7 +43,7 @@ const StudentsHome = () => {
     useEffect(() => {
         const checkAuth = async () => {
             try {   //get requests sent to backend for the cookie authentication at the /api/me endpoint of the server
-                const response = await fetch("http://localhost:9000/api/me", {
+                const response = await fetch(`${API_BASE}/api/me`, {
                     method: "GET",
                     credentials: "include",
                 });
@@ -63,7 +64,7 @@ const StudentsHome = () => {
         const fetchUserProfile = async () => {
             try {
                 {
-                    const response = await fetch("http://localhost:9000/api/me", {
+                    const response = await fetch(`${API_BASE}/api/me`, {
                         method: "GET",
                         credentials: "include", //Ensures cookies/tokens are sent
                         headers: {
@@ -90,7 +91,9 @@ const StudentsHome = () => {
     //Logout Function
     const handleLogout = async () => {
         try {
-            await fetch("http://localhost:9000/api/logout", { method: "GET" });
+            await fetch(`${API_BASE}/api/logout`, { 
+                method: "GET",
+            credentials:"include" });
 
             //Clear local storage to redirect to login page
             localStorage.removeItem("token");

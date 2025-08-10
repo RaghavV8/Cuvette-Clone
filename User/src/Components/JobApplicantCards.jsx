@@ -1,4 +1,5 @@
 import React from 'react'
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 import 'boxicons';
 
 const JobApplicantCards = ({ applicationId, applicantName, email, title, location, description, salary, createdAt, status, onStatusChange, fetchApplicants }) => {
@@ -6,7 +7,7 @@ const JobApplicantCards = ({ applicationId, applicantName, email, title, locatio
         try {
             console.log(`Sending request to update status to '${status}' for applicationId: ${applicationId}`);
 
-            const response = await fetch(`http://localhost:9000/api/application/${applicationId}/status`, {
+            const response = await fetch(`${API_BASE}/api/application/${applicationId}/status`, {
                 method: "PUT",
                 credentials: 'include',
                 headers: {

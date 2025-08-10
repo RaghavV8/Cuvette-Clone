@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form";
 import Navbar from './Navbar';
 import { useNavigate } from 'react-router-dom';
+const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
 
 const CreateJob = () => {
@@ -16,7 +17,7 @@ const CreateJob = () => {
     useEffect(() => {
         const fetchJobTypes = async () => {
             try {
-                const response = await fetch('http://localhost:9000/api/type/jobs')
+                const response = await fetch(`${API_BASE}/api/type/jobs`);
                 const data = await response.json();
 
                 console.log("Job Types Array:", data.jobT);
@@ -24,7 +25,7 @@ const CreateJob = () => {
                 if (Array.isArray(data.jobT)) {
                     setJobTypes(data.jobT);
                 } else {
-                    console.log("Unexepected API response format:", data);
+                    console.log("Unexpected API response format:", data);
                     setJobTypes([]);
                 }
             } catch (error) {
@@ -49,7 +50,7 @@ const CreateJob = () => {
             console.log("Submitting Job Data:", jobdata);
 
 
-            const response = await fetch("http://localhost:9000/api/job/create", {
+            const response = await fetch(`${API_BASE}/api/job/create`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
