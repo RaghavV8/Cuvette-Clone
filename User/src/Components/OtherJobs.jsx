@@ -15,7 +15,7 @@ const StudentsHome = () => {
     const [page, setPage] = useState(1);
     const [cat, setCat] = React.useState(''); //Variable intended for category wise search will work on it later
     const [searchTerm, setSearchTerm] = useState("");
-
+    const [appliedJobIds, setAppliedJobIds] = useState([]);
 
     //To search for jobs in the search bar and for that to get job data from Redux store
     const { jobs, loading, error } = useSelector(state => state.loadJobs);
@@ -24,27 +24,49 @@ const StudentsHome = () => {
     //Excluding Jobs with the tag others
     const EXCLUDED_JOB_TYPE_ID = "67cae27aad0ea1d293bac443";
 
+    //To fetch applied jobs to the page when applied by a user
+    const fetchAppliedJobs = useCallback(async () => {
+        try {
+            const response = await fetch(`${API_BASE}/api/applied`, {
+                method: "GET",
+                credentials: "include"
+            });
+            const data = await response.json();
+            if (response.ok) {
+                const ids = data.applications.map(app => app.job._id);
+                setAppliedJobIds(ids);
+            }
+        } catch (error) {
+            console.error("Error fetching applied jobs:", error);
+        }
+    }, []);
+
+    const handleApplySuccess = () => {
+        fetchAppliedJobs();
+    };
 
     //To Load All the Jobs fetched by the API in the form of Cards
     useEffect(() => {
         dispatch(jobLoadAction(page, keyword, cat, location));
-    }, [page, keyword, cat, location]);
+        fetchAppliedJobs(); // Fetch applied jobs whenever the main job list is loaded
+    }, [page, keyword, cat, location, dispatch, fetchAppliedJobs]);
 
     const filteredJobs = Array.isArray(jobs)
         ? jobs.filter((job) => {
+            // Exclude applied jobs
+            if (appliedJobIds.includes(job._id)) return false;
+
             // Exclude jobs with the EXCLUDED_JOB_TYPE_ID
             if (job.jobType !== EXCLUDED_JOB_TYPE_ID) return false;
 
             //This line ensures that whenever a job Type is selected from the select options only those job Types are shown
             const matchesJobType = selectedJobType ? job.jobType === selectedJobType : true;
-
             const matchesSearch = searchTerm
                 ? job.title.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
                 job.location.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
                 job.description.toLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
                 job.salary.toLowerCase().includes(searchTerm.toLocaleLowerCase())
                 : true;
-
 
             return matchesSearch && matchesJobType
         }) : [];
@@ -186,20 +208,20 @@ const StudentsHome = () => {
                         <input type="text" className='p-2 border border-gray-300 rounded w-full' placeholder='Search Jobs...'
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                         />
-                    {loading ? (
-                        <p className='text-center text-gray-500'> Loading...</p>
-                    ) : error ? (
-                        <p className='text-center text-gray-500'>{error}</p>
-                    ) : (
-                        filteredJobs.length > 0 ? (
-                            filteredJobs.map((job) => (
-                                <JobCard key={job._id} {...job}/>
-                            ))
+                        />
+                        {loading ? (
+                            <p className='text-center text-gray-500'> Loading...</p>
+                        ) : error ? (
+                            <p className='text-center text-gray-500'>{error}</p>
                         ) : (
-                            <p className='text-gray-500'>No jobs found</p>
-                        )
-                    )}
+                            filteredJobs.length > 0 ? (
+                                filteredJobs.map((job) => (
+                                    <JobCard key={job._id} {...job} />
+                                ))
+                            ) : (
+                                <p className='text-gray-500'>No jobs found</p>
+                            )
+                        )}
                     </div>
                 </main>
             </div>
