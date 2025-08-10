@@ -216,7 +216,7 @@ const StudentsHome = () => {
                         ) : (
                             filteredJobs.length > 0 ? (
                                 filteredJobs.map((job) => (
-                                    <JobCard key={job._id} {...job} />
+                                    <JobCard key={job._id} {...job} onApplySuccess={handleApplySuccess}/>
                                 ))
                             ) : (
                                 <p className='text-gray-500'>No jobs found</p>
