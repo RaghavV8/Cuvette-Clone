@@ -10,7 +10,7 @@ console.log("Token received:", req.cookies?.token);
     const token  = req.cookies?.token|| req.header("Authorization")?.replace("Bearer ", ""); //Get token from HTTP-only cookies
     //Make sure tokens exists
     if(!token){
-        return next(new ErrorResponse("Not authorised to access this route",400));
+        return next(new ErrorResponse("Not authorised to access this route",401));
     }
 
     try {
@@ -21,13 +21,13 @@ console.log("Token received:", req.cookies?.token);
              console.log("User Found in DB:", req.user); // ✅ Debugging
 
         if(!req.user){
-            return next(new ErrorResponse("User Not Found",399))
+            return next(new ErrorResponse("User Not Found",401))
         }
 
         next();
     } catch (error) {
          console.error("JWT Verification Error:", error); 
-       return next(new ErrorResponse("Not authorized to access this route", 400)); 
+       return next(new ErrorResponse("Not authorized to access this route", 401)); 
     }
 }
 

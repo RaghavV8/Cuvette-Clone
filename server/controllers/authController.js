@@ -64,6 +64,7 @@ const sendTokenResponse = async(user,codeStatus, res)=>{
     const options = {
         httpOnly: true, // Prevents Javascript access (More secure than localStorage)
         secure:true, // Works only in HTTPS in production
+        path:"/",
         sameSite: "none", // Allows sending cookies only for same-site requests
         maxAge: 60*60*1000, // 1 Hour Cookie Age 
     };
