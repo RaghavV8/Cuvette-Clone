@@ -1,7 +1,7 @@
 import React from 'react'
 const API_BASE = import.meta.env.VITE_API_BASE_URL;
 
-const JobCard = ({ _id, title, location, description, salary, createdAt }) => {
+const JobCard = ({ _id, title, location, description, salary, createdAt, onApplySuccess }) => {
     const applyForJob = async () => {
         try {
             if (!_id) { // ✅ Check if _id exists before using it
@@ -23,6 +23,9 @@ const JobCard = ({ _id, title, location, description, salary, createdAt }) => {
             const data = await response.json();
             if (response.ok) {
                 console.log("Succesfully Applied !");
+                if (onApplySuccess) {
+                    onApplySuccess();
+                }
             } else {
                 console.log(data.error);
             }

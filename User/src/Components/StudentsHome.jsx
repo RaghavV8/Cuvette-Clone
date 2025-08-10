@@ -12,6 +12,28 @@ const Home = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { keyword, location } = useParams();
+    const [appliedJobIds, setAppliedJobIds] = useState([]);
+
+    //To fetch applied jobs to the page when applied by a user
+    const fetchAppliedJobs = useCallback(async () => {
+    try {
+        const response = await fetch(`${API_BASE}/api/applied`, {
+            method: "GET",
+            credentials: "include"
+        });
+        const data = await response.json();
+        if (response.ok) {
+            const ids = data.applications.map(app => app.job._id);
+            setAppliedJobIds(ids);
+        }
+    } catch (error) {
+        console.error("Error fetching applied jobs:", error);
+    }
+}, []);
+
+const handleApplySuccess = () => {
+    fetchAppliedJobs();
+};
 
     //Excluding Jobs with the tag others
     const EXCLUDED_JOB_TYPE_ID = "67cae27aad0ea1d293bac443";
@@ -32,7 +54,8 @@ const Home = () => {
     //To Load All the Jobs fetched by the API in the form of Cards
     useEffect(() => {
         dispatch(jobLoadAction(page, keyword, cat, location));
-    }, [page, keyword, cat, location]);
+        fetchAppliedJobs(); // Fetch applied jobs whenever the main job list is loaded
+    }, [page, keyword, cat, location,dispatch, fetchAppliedJobs]);
 
     const filteredJobs = Array.isArray(jobs) 
     ? jobs.filter((job) => {
@@ -216,7 +239,7 @@ const Home = () => {
                     ) : (
                         filteredJobs.length > 0 ? (
                             filteredJobs.map((job) => (
-                                <JobCard key={job._id} {...job}/>
+                                <JobCard key={job._id} {...job} onApplySuccess={handleApplySuccess}/>
                             ))
                         ) : (
                             <p className='text-gray-500'>No jobs found</p>
